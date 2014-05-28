@@ -11,9 +11,10 @@
 
 * A CSV file or a directory of CSV files
 * Configuration
-  * `timestamp_key`
-  * `uuid_key`
-  * `uuid_hints`
+  - `timestamp_key`
+  - `uuid_key`
+  - `uuid_hints`
+  - `source`
 
 ## Outputs
 
@@ -22,7 +23,12 @@ Sample directory structure
 ```
 - 2012
   - 10
-    - 30
-    - 31
+    - 30.csv
+    - 31.csv
   - 11
 ```
+
+## Modules
+
+* InputSplit base on timestamp format configuration
+* Timestamp folder generator
