@@ -3,18 +3,22 @@ module Creek
     MissingRequiredKeysError = Class.new(StandardError)
 
     def initialize(opts)
-      @required_keys = opts.fetch(:required_keys)
+      @required_keys = opts.fetch(:required_keys).dup.freeze
     end
 
     def normalize(hash)
       assert_has_required_keys!(hash, @required_keys)
+      build_normalized_hash(hash)
+    end
+    alias :call :normalize
 
+    private
+
+    def build_normalized_hash(hash)
       new_hash = hash.slice *@required_keys
       new_hash['id'] = generate_unique_id(new_hash)
       new_hash
     end
-
-    private
 
     def generate_unique_id(hash)
       hash.values.map(&:to_s).join

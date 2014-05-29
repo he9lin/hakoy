@@ -1,5 +1,9 @@
+require 'fileutils'
+require 'csv'
+
 require_relative "creek/version"
 require_relative "creek/ext/hash"
+require_relative "creek/file_iterator"
 require_relative "creek/timestamp_path"
 require_relative "creek/row_normalizer"
 require_relative "creek/file_appender"
@@ -15,19 +19,35 @@ module Creek
       @row_normalizer = RowNormalizer.new(conf)
       @timestamp_key  = conf.fetch(:timestamp_key)
       @db_dir         = conf.fetch(:db_dir)
+      @output_format  = conf.fetch(:output_format) { 'txt' }
     end
 
     def store(file)
-      CSV.foreach(file, headers: true) do |row|
-        store_row(row.to_hash)
+      FileIterator.(file) do |row_hash|
+        store_row(row_hash)
       end
     end
 
+    private
+
     def store_row(row_hash)
+      file_path            = build_file_path(row_hash)
+      normalized_row_hash  = normalize_row_hash(row_hash)
+
+      append_file(file_path, normalized_row_hash)
+    end
+
+    def build_file_path(row_hash)
       path_opts = @timestamp_path.to_path(row_hash[@timestamp_key])
-      path = File.join @db_dir, path_opts[:dir], "#{path_opts[:file]}.csv"
-      row_hash = @row_normalizer.normalize(row_hash)
-      FileAppender.append(file_path: path, row_hash: row_hash)
+      File.join @db_dir, path_opts[:dir], "#{path_opts[:file]}.#{@output_format}"
+    end
+
+    def normalize_row_hash(row_hash)
+      @row_normalizer.normalize(row_hash)
+    end
+
+    def append_file(file_path, row_hash)
+      FileAppender.(file_path: file_path, row_hash: row_hash)
     end
   end
 end

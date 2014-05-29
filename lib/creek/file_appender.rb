@@ -1,9 +1,3 @@
-require 'fileutils'
-require 'csv'
-
-require_relative 'file_appender/txt'
-require_relative 'file_appender/csv'
-
 module Creek
   module FileAppender
     extend self
@@ -12,21 +6,16 @@ module Creek
       file_path  = hash.fetch(:file_path)
       row_hash   = hash.fetch(:row_hash)
       dir        = File.dirname(file_path)
-
-      extname  = find_extname(file_path)
-      strategy = find_strategy(extname)
+      extname    = File.extname(file_path)
 
       ensure_dir_exist(dir)
+
+      strategy = find_strategy(extname)
       strategy.(file_path, row_hash)
     end
+    alias :call :append
 
     private
-
-    def find_extname(file_path)
-      extname = File.extname(file_path)
-      extname = '.txt' if extname == ''
-      extname
-    end
 
     def find_strategy(extname)
       appender_type = extname[1..-1].capitalize
@@ -38,3 +27,6 @@ module Creek
     end
   end
 end
+
+require_relative 'file_appender/txt'
+require_relative 'file_appender/csv'

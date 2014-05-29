@@ -5,6 +5,7 @@ describe Creek do
     conf = {
       timestamp_key: 'Created at',
       db_dir: tmp_path,
+      output_format: 'csv',
       required_keys: [
         'Billing Name',
         'Lineitem name',
