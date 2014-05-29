@@ -10,6 +10,7 @@ describe Creek::RowNormalizer do
 
     let(:conf) {
       {
+        uid_key: 'id',
         required_keys: \
           ['order_id', 'product', 'customer', 'price', 'timestamp', 'quantity']
       }

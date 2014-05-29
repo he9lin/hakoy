@@ -2,16 +2,14 @@ module Creek
   module FileAppender
     extend self
 
-    def append(hash)
-      file_path  = hash.fetch(:file_path)
-      row_hash   = hash.fetch(:row_hash)
-      dir        = File.dirname(file_path)
-      extname    = File.extname(file_path)
+    def append(file_path, row_hash, opts={})
+      dir     = File.dirname(file_path)
+      extname = File.extname(file_path)
 
       ensure_dir_exist(dir)
 
       strategy = find_strategy(extname)
-      strategy.(file_path, row_hash)
+      strategy.(file_path, row_hash, opts)
     end
     alias :call :append
 

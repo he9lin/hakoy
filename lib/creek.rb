@@ -14,12 +14,19 @@ module Creek
   end
 
   class Proxy
+    DEFAULT_OUTPUT_FORMAT = 'csv'
+    DEFAULT_UID_KEY       = 'id'
+
     def initialize(conf)
-      @timestamp_path = TimestampPath.new
-      @row_normalizer = RowNormalizer.new(conf)
       @timestamp_key  = conf.fetch(:timestamp_key)
       @db_dir         = conf.fetch(:db_dir)
-      @output_format  = conf.fetch(:output_format) { 'txt' }
+      @output_format  = conf.fetch(:output_format) { DEFAULT_OUTPUT_FORMAT }
+      @uid_key        = conf.fetch(:uid_key) { DEFAULT_UID_KEY }
+      required_keys   = conf.fetch(:required_keys)
+
+      @timestamp_path = TimestampPath.new
+      @row_normalizer = RowNormalizer.new(
+        required_keys: required_keys, uid_key: @uid_key)
     end
 
     def store(file)
@@ -47,7 +54,7 @@ module Creek
     end
 
     def append_file(file_path, row_hash)
-      FileAppender.(file_path: file_path, row_hash: row_hash)
+      FileAppender.(file_path, row_hash, uid_key: @uid_key)
     end
   end
 end
