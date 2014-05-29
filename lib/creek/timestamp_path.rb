@@ -11,18 +11,19 @@ module Creek
       unit = opts.fetch(:unit) { :day }
       span = opts.fetch(:span) { 1 }
 
-      @dir_strategy  = -> (t) {
-        DIR_PARTS_FOR[unit].map {|m| t.send(m)}.join('/')
-      }
-      @file_strategy = -> (t) {
+      @dir_strategy  = -> (t) do
+        DIR_PARTS_FOR[unit].map { |m| t.send(m) }.join('/')
+      end
+
+      @file_strategy = -> (t) do
         TWO_DIGITS_FORMAT % (t.send(unit) / span).to_i
-      }
+      end
     end
 
     def to_path(timestamp_str)
       build_path Time.parse(timestamp_str)
     end
-    alias :call :to_path
+    alias_method :call, :to_path
 
     private
 

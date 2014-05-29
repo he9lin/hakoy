@@ -46,7 +46,8 @@ module Creek
 
     def build_file_path(row_hash)
       path_opts = @timestamp_path.to_path(row_hash[@timestamp_key])
-      File.join @db_dir, path_opts[:dir], "#{path_opts[:file]}.#{@output_format}"
+      File.join \
+        @db_dir, path_opts[:dir], "#{path_opts[:file]}.#{@output_format}"
     end
 
     def normalize_row_hash(row_hash)

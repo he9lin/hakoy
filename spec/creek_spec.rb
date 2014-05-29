@@ -20,7 +20,7 @@ describe Creek do
     file1 = File.join tmp_path, '2014/5/26.csv'
     file2 = File.join tmp_path, '2014/5/28.csv'
     [file1, file2].each do |file|
-      expect(File.exists?(file)).to be_true
+      expect(File.exist?(file)).to be_true
     end
 
     FileUtils.remove_dir(File.join(tmp_path, '2014'), true)

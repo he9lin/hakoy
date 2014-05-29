@@ -8,7 +8,7 @@ describe Creek::TimestampPath do
       it do
         result = described_class.new(unit: :day)
         expect(result.to_path(timestamp_str)).to \
-          eq({dir: '2014/5', file: '28'})
+          eq(dir: '2014/5', file: '28')
       end
     end
 
@@ -16,7 +16,7 @@ describe Creek::TimestampPath do
       it do
         result = described_class.new
         expect(result.to_path(timestamp_str)).to \
-          eq({dir: '2014/5', file: '28'})
+          eq(dir: '2014/5', file: '28')
       end
     end
 
@@ -25,7 +25,7 @@ describe Creek::TimestampPath do
         it do
           result = described_class.new(unit: :hour, span: 1)
           expect(result.to_path(timestamp_str)).to \
-            eq({dir: '2014/5/28', file: '10'})
+            eq(dir: '2014/5/28', file: '10')
         end
       end
 
@@ -33,7 +33,7 @@ describe Creek::TimestampPath do
         it do
           result = described_class.new(unit: :hour)
           expect(result.to_path(timestamp_str)).to \
-            eq({dir: '2014/5/28', file: '10'})
+            eq(dir: '2014/5/28', file: '10')
         end
       end
 
@@ -41,7 +41,7 @@ describe Creek::TimestampPath do
         it do
           result = described_class.new(unit: :hour, span: 12)
           expect(result.to_path(timestamp_str)).to \
-            eq({dir: '2014/5/28', file: '00'})
+            eq(dir: '2014/5/28', file: '00')
         end
       end
     end

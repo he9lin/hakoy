@@ -1,20 +1,20 @@
 require 'spec_helper'
 
 describe Creek::RowNormalizer do
-  describe "#normalize" do
-    before(:all) {
+  describe '#normalize' do
+    before(:all) do
       @row = JSON.parse(File.read fixture_file('order.json'))
-    }
+    end
 
     let(:input)  { @row }
 
-    let(:conf) {
+    let(:conf) do
       {
         uid_key: 'id',
         required_keys: \
-          ['order_id', 'product', 'customer', 'price', 'timestamp', 'quantity']
+          %w(order_id product customer price timestamp quantity)
       }
-    }
+    end
 
     before do
       @row_normalizer = described_class.new(conf)

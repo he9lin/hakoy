@@ -25,7 +25,7 @@ describe Creek::FileAppender do
     end
 
     it 'creates the file if not exist' do
-      expect(File.exists?(file_path)).to be_true
+      expect(File.exist?(file_path)).to be_true
     end
 
     it 'write header row to the file' do
