@@ -1,3 +1,3 @@
 # Creek
 
-Parse and store CSV kind of files into timestamp-sliced directories.
+Parse and organize CSV data into timestamp-sliced directories. 
