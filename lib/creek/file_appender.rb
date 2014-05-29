@@ -26,5 +26,4 @@ module Creek
   end
 end
 
-require_relative 'file_appender/txt'
 require_relative 'file_appender/csv'
