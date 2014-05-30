@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Creek::FileAppender do
+describe Hakoy::FileAppender do
   before(:all) {
     @row = JSON.parse(File.read fixture_file('order.json'))
   }

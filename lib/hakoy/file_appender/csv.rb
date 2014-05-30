@@ -1,4 +1,4 @@
-module Creek
+module Hakoy
   module FileAppender
     module Csv
       extend self

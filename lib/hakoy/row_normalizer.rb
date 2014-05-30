@@ -1,4 +1,4 @@
-module Creek
+module Hakoy
   class RowNormalizer
     MissingRequiredKeysError = Class.new(StandardError)
 

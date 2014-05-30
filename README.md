@@ -1,4 +1,4 @@
-# Creek
+# Hakoy
 
 Parse and organize CSV data into timestamp-sliced directories.
 
@@ -19,7 +19,7 @@ conf = {
   ]
 }
 
-Creek.('data/order.csv', conf)
+Hakoy.('data/order.csv', conf)
 ```
 
 ## TODO

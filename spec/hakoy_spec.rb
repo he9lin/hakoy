@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Creek do
+describe Hakoy do
   it 'stores csv rows in timestamp sliced directories' do
     conf = {
       timestamp_key: 'Created at',
@@ -15,7 +15,7 @@ describe Creek do
         'Name' # order_id
       ]
     }
-    Creek.(fixture_file('orders.csv'), conf)
+    Hakoy.(fixture_file('orders.csv'), conf)
 
     file1 = File.join tmp_path, '2014/5/26.csv'
     file2 = File.join tmp_path, '2014/5/28.csv'

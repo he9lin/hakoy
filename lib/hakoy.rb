@@ -1,14 +1,14 @@
 require 'fileutils'
 require 'csv'
 
-require_relative "creek/version"
-require_relative "creek/ext/hash"
-require_relative "creek/file_iterator"
-require_relative "creek/timestamp_path"
-require_relative "creek/row_normalizer"
-require_relative "creek/file_appender"
+require_relative "hakoy/version"
+require_relative "hakoy/ext/hash"
+require_relative "hakoy/file_iterator"
+require_relative "hakoy/timestamp_path"
+require_relative "hakoy/row_normalizer"
+require_relative "hakoy/file_appender"
 
-module Creek
+module Hakoy
   def self.call(file, conf)
     Proxy.new(conf).store(file)
   end

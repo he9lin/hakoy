@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Creek::RowNormalizer do
+describe Hakoy::RowNormalizer do
   describe '#normalize' do
     before(:all) do
       @row = JSON.parse(File.read fixture_file('order.json'))

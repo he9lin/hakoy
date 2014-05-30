@@ -1,6 +1,6 @@
 require 'time'
 
-module Creek
+module Hakoy
   class TimestampPath
     DIR_PARTS_FOR = {
       day:  %w(year month),

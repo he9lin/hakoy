@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Creek::TimestampPath do
+describe Hakoy::TimestampPath do
   describe '#to_path' do
     let(:timestamp_str) {'2014-05-28 10:26:09 -0700'}
 

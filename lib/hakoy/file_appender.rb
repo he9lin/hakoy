@@ -1,4 +1,4 @@
-module Creek
+module Hakoy
   module FileAppender
     extend self
 
