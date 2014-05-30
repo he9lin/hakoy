@@ -1,3 +1,5 @@
+require 'time'
+
 module Creek
   class TimestampPath
     DIR_PARTS_FOR = {
