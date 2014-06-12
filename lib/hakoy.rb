@@ -4,6 +4,7 @@ require 'csv'
 require_relative "hakoy/version"
 require_relative "hakoy/ext/hash"
 require_relative "hakoy/ext/array"
+require_relative "hakoy/append_strategy"
 require_relative "hakoy/file_iterator"
 require_relative "hakoy/timestamp_path"
 require_relative "hakoy/row_normalizer"
@@ -19,20 +20,22 @@ module Hakoy
     DEFAULT_UID_KEY       = 'id'
 
     def initialize(conf)
-      @timestamp_key  = conf.fetch(:timestamp_key)
-      @db_dir         = conf.fetch(:db_dir)
-      @output_format  = conf.fetch(:output_format) { DEFAULT_OUTPUT_FORMAT }
-      @uid_key        = conf.fetch(:uid_key) { DEFAULT_UID_KEY }
-      @strategies     = conf.fetch(:strategies) { Hash.new }
-      required_keys   = conf.fetch(:required_keys)
+      @timestamp_key   = conf.fetch(:timestamp_key)
+      @db_dir          = conf.fetch(:db_dir)
+      @output_format   = conf.fetch(:output_format)   { DEFAULT_OUTPUT_FORMAT }
+      @uid_key         = conf.fetch(:uid_key)         { DEFAULT_UID_KEY       }
+      @file_iterator   = conf.fetch(:file_iterator)   { FileIterator          }
+      @append_strategy = conf.fetch(:append_strategy) { AppendStrategy.new    }
+      required_keys    = conf.fetch(:required_keys)
 
-      @timestamp_path = TimestampPath.new
-      @row_normalizer = RowNormalizer.new(
-        required_keys: required_keys, uid_key: @uid_key)
+      @timestamp_path  = TimestampPath.new
+      @row_normalizer  = RowNormalizer.new(
+        required_keys: required_keys, uid_key: @uid_key
+      )
     end
 
     def store(file)
-      FileIterator.(file) { |row_hash| store_row(row_hash) }
+      @file_iterator.(file) { |row_hash| store_row(row_hash) }
       finalize_store!
     end
 
@@ -42,7 +45,7 @@ module Hakoy
       file_path            = build_file_path(row_hash)
       normalized_row_hash  = normalize_row_hash(row_hash)
 
-      store_row_to_file(file_path, normalized_row_hash)
+      append_row_to_file(file_path, normalized_row_hash)
     end
 
     def build_file_path(row_hash)
@@ -55,20 +58,12 @@ module Hakoy
       @row_normalizer.normalize(row_hash)
     end
 
-    def store_row_to_file(file_path, row_hash)
-      memory[file_path] << row_hash
-    end
-
-    def memory
-      @_memory ||= Hash.new { |h, k| h[k] = [] }
+    def append_row_to_file(file_path, row_hash)
+      @append_strategy.append_row_to_file(file_path, row_hash)
     end
 
     def finalize_store!
-      memory.each do |file_path, rows_hash|
-        FileAppender.(file_path, rows_hash,
-                      strategy: @strategies[:append_file],
-                      uid_key:  @uid_key)
-      end
+      @append_strategy.finalize!(@uid_key)
     end
   end
 end
