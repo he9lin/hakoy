@@ -2,9 +2,10 @@ module Hakoy
   module FileIterator
     extend self
 
-    def call(file, &block)
+    def call(file, opts={}, &block)
       extname = File.extname(file)
-      find_iterator(extname).(file, &block)
+      iterator = opts.fetch(:iterator) { find_iterator(extname) }
+      iterator.(file, &block)
     end
 
     private

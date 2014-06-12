@@ -2,14 +2,15 @@ module Hakoy
   module FileAppender
     extend self
 
-    def append(file_path, row_hash, opts={})
-      dir     = File.dirname(file_path)
-      extname = File.extname(file_path)
+    def append(file_path, rows_hash, opts={})
+      dir      = File.dirname(file_path)
+      extname  = File.extname(file_path)
+      strategy = opts.delete(:strategy)
 
       ensure_dir_exist(dir)
 
-      strategy = find_strategy(extname)
-      strategy.(file_path, row_hash, opts)
+      strategy ||= find_strategy(extname)
+      strategy.(file_path, rows_hash, opts)
     end
     alias :call :append
 
