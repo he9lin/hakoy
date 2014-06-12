@@ -8,7 +8,6 @@ require_relative "hakoy/file_iterator"
 require_relative "hakoy/timestamp_path"
 require_relative "hakoy/row_normalizer"
 require_relative "hakoy/file_appender"
-require_relative "hakoy/csv_duplicate_finder"
 
 module Hakoy
   def self.call(file, conf)

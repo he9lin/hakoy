@@ -29,8 +29,6 @@ module Hakoy
 
         return if rows_hash.empty?
 
-        header_hash = rows_hash[0].keys
-
         CSV.open(file_path, 'a') do |to_file|
           append_row_hash_values = -> (row_hash) do
             append_to_csv_file(to_file, row_hash.values)
@@ -40,6 +38,7 @@ module Hakoy
             when_not_a_duplicate(file_path, rows_hash, uid_key, &append_row_hash_values)
           else
             # Add header for new file and no need to check duplicates
+            header_hash = rows_hash[0].keys
             append_to_csv_file to_file, header_hash
             rows_hash.each(&append_row_hash_values)
           end
