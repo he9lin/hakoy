@@ -43,7 +43,7 @@ module Hakoy
       file_path            = build_file_path(row_hash)
       normalized_row_hash  = normalize_row_hash(row_hash)
 
-      append_file(file_path, normalized_row_hash)
+      store_row_to_file(file_path, normalized_row_hash)
     end
 
     def build_file_path(row_hash)
@@ -56,7 +56,7 @@ module Hakoy
       @row_normalizer.normalize(row_hash)
     end
 
-    def append_file(file_path, row_hash)
+    def store_row_to_file(file_path, row_hash)
       memory[file_path] << row_hash
     end
 
