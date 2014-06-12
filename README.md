@@ -26,6 +26,4 @@ Hakoy.('data/order.csv', conf)
 
 ## TODO
 
-* Queue up multiple rows to write to a file; currently it does a file
-  open/close for every row.
 * Better unique key generation algorithm. It is too primitive now.
