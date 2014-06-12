@@ -3,10 +3,12 @@ require 'csv'
 
 require_relative "hakoy/version"
 require_relative "hakoy/ext/hash"
+require_relative "hakoy/ext/array"
 require_relative "hakoy/file_iterator"
 require_relative "hakoy/timestamp_path"
 require_relative "hakoy/row_normalizer"
 require_relative "hakoy/file_appender"
+require_relative "hakoy/csv_duplicate_finder"
 
 module Hakoy
   def self.call(file, conf)
@@ -22,6 +24,7 @@ module Hakoy
       @db_dir         = conf.fetch(:db_dir)
       @output_format  = conf.fetch(:output_format) { DEFAULT_OUTPUT_FORMAT }
       @uid_key        = conf.fetch(:uid_key) { DEFAULT_UID_KEY }
+      @strategies     = conf.fetch(:strategies) { Hash.new }
       required_keys   = conf.fetch(:required_keys)
 
       @timestamp_path = TimestampPath.new
@@ -30,9 +33,8 @@ module Hakoy
     end
 
     def store(file)
-      FileIterator.(file) do |row_hash|
-        store_row(row_hash)
-      end
+      FileIterator.(file) { |row_hash| store_row(row_hash) }
+      finalize_store!
     end
 
     private
@@ -55,7 +57,19 @@ module Hakoy
     end
 
     def append_file(file_path, row_hash)
-      FileAppender.(file_path, row_hash, uid_key: @uid_key)
+      memory[file_path] << row_hash
+    end
+
+    def memory
+      @_memory ||= Hash.new { |h, k| h[k] = [] }
+    end
+
+    def finalize_store!
+      memory.each do |file_path, rows_hash|
+        FileAppender.(file_path, rows_hash,
+                      strategy: @strategies[:append_file],
+                      uid_key:  @uid_key)
+      end
     end
   end
 end
