@@ -1,5 +1,7 @@
 # Hakoy
 
+[![Code Climate](https://codeclimate.com/github/he9lin/hakoy.png)](https://codeclimate.com/github/he9lin/hakoy)
+
 Parse and organize CSV data into timestamp-sliced directories.
 
 
