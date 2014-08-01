@@ -18,7 +18,6 @@ module Hakoy
   class Proxy
     DEFAULT_OUTPUT_FORMAT = 'csv'
     DEFAULT_UID_KEY       = 'uid'
-    REQUIED_KEYS          = %w(customer product timestamp price quantity order_id)
 
     def initialize(conf)
       @timestamp_key         = conf.fetch(:timestamp_key)
@@ -28,11 +27,8 @@ module Hakoy
       @file_iterator         = conf.fetch(:file_iterator)   { FileIterator          }
       @append_strategy       = conf.fetch(:append_strategy) { AppendStrategy.new    }
       @required_keys_mapping = conf.fetch(:required_keys_mapping)
-
-      assert_required_keys_present!(@required_keys_mapping)
-
-      @timestamp_path  = TimestampPath.new
-      @row_normalizer  = RowNormalizer.new(
+      @timestamp_path        = TimestampPath.new
+      @row_normalizer        = RowNormalizer.new(
         required_keys: @required_keys_mapping.values, uid_key: @uid_key
       )
     end
@@ -43,13 +39,6 @@ module Hakoy
     end
 
     private
-
-    def assert_required_keys_present!(mapping)
-      mapping.keys.each do |key|
-        raise "Missing one of #{REQUIED_KEYS}" \
-          unless REQUIED_KEYS.include? key.to_s
-      end
-    end
 
     def store_row(row_hash)
       file_path            = build_file_path(row_hash)
@@ -74,7 +63,7 @@ module Hakoy
 
     def finalize_store!
       @append_strategy.finalize! \
-        uid_key: DEFAULT_UID_KEY,
+        uid_key:      DEFAULT_UID_KEY,
         keys_mapping: @required_keys_mapping
     end
   end
