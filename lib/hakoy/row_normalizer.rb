@@ -2,6 +2,12 @@ module Hakoy
   class RowNormalizer
     MissingRequiredKeysError = Class.new(StandardError)
 
+    module GenerateUniqueId
+      def self.call(hash)
+        hash.values.map(&:to_s).join
+      end
+    end
+
     def initialize(opts)
       @uid_key = opts.fetch(:uid_key)
       @required_keys = opts.fetch(:required_keys).dup.freeze
@@ -22,7 +28,7 @@ module Hakoy
     end
 
     def generate_unique_id(hash)
-      hash.values.map(&:to_s).join
+      GenerateUniqueId.(hash)
     end
 
     def assert_has_required_keys!(hash, required_keys)

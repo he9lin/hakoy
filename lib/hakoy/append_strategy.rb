@@ -4,9 +4,12 @@ module Hakoy
       memory[file_path] << row_hash
     end
 
-    def finalize!(uid_key)
+    def finalize!(opts)
+      uid_key      = opts.fetch(:uid_key)
+      keys_mapping = opts.fetch(:keys_mapping)
+
       memory.each do |file_path, rows_hash|
-        FileAppender.(file_path, rows_hash, uid_key:  uid_key)
+        FileAppender.(file_path, rows_hash, uid_key: uid_key, keys_mapping: keys_mapping)
       end
     end
 

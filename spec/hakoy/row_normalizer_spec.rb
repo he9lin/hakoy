@@ -10,9 +10,15 @@ describe Hakoy::RowNormalizer do
 
     let(:conf) do
       {
-        uid_key: 'id',
-        required_keys: \
-          %w(order_id product customer price timestamp quantity)
+        uid_key: 'uid',
+        required_keys: [
+          'customer',
+          'product',
+          'timestamp',
+          'price',
+          'quantity',
+          'order_id'
+        ]
       }
     end
 
@@ -27,14 +33,14 @@ describe Hakoy::RowNormalizer do
 
     it 'generates a unique id based on required keys' do
       result  = @row_normalizer.normalize(input)
-      expect(result['id']).to_not be_nil
+      expect(result['uid']).to_not be_nil
 
       result2 = @row_normalizer.normalize(input)
-      expect(result['id']).to eq(result['id'])
+      expect(result2['uid']).to eq(result['uid'])
 
       input['order_id'] = '1002'
       result3 = @row_normalizer.normalize(input)
-      expect(result3['id']).to_not eq(result['id'])
+      expect(result3['uid']).to_not eq(result['uid'])
     end
 
     it 'raises error if any of the required keys not found' do

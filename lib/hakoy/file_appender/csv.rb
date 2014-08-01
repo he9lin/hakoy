@@ -23,23 +23,26 @@ module Hakoy
       end
 
       def call(file_path, rows_hash, opts={})
-        uid_key     = opts.fetch(:uid_key) { 'id' }
-        file_exists = File.exists?(file_path)
-        rows_hash   = Array.wrap(rows_hash)
+        uid_key      = opts.fetch(:uid_key) { 'uid' }
+        keys_mapping = opts.fetch(:keys_mapping) # An array
+        file_exists  = File.exists?(file_path)
+        rows_hash    = Array.wrap(rows_hash)
+        keys         = keys_mapping.keys
+        header_keys  = keys_mapping.values
 
         return if rows_hash.empty?
 
         CSV.open(file_path, 'a') do |to_file|
           append_row_hash_values = -> (row_hash) do
-            append_to_csv_file(to_file, row_hash.values)
+            append_to_csv_file(to_file, row_hash.values_at(*header_keys))
           end
 
           if file_exists
             when_not_a_duplicate(file_path, rows_hash, uid_key, &append_row_hash_values)
           else
             # Add header for new file and no need to check duplicates
-            header_hash = rows_hash[0].keys
-            append_to_csv_file to_file, header_hash
+            header_hash = rows_hash[0].keys.map {|key| keys_mapping.key(key) }
+            append_to_csv_file to_file, keys
             rows_hash.each(&append_row_hash_values)
           end
         end
