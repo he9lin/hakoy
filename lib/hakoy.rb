@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'csv'
+require 'chronic'
 
 require_relative "hakoy/version"
 require_relative "hakoy/ext/hash"
@@ -7,6 +8,7 @@ require_relative "hakoy/ext/array"
 require_relative "hakoy/append_strategy"
 require_relative "hakoy/file_iterator"
 require_relative "hakoy/timestamp_path"
+require_relative "hakoy/timestamp_normalizer"
 require_relative "hakoy/row_normalizer"
 require_relative "hakoy/file_appender"
 
@@ -31,6 +33,9 @@ module Hakoy
       @row_normalizer        = RowNormalizer.new(
         required_keys: @required_keys_mapping.values, uid_key: @uid_key
       )
+      @timestamp_normalizer  = TimestampNormalizer.new(
+        key: @timestamp_key
+      )
     end
 
     def store(file)
@@ -41,8 +46,9 @@ module Hakoy
     private
 
     def store_row(row_hash)
-      file_path            = build_file_path(row_hash)
-      normalized_row_hash  = normalize_row_hash(row_hash)
+      row_hash            = normalize_timestamp(row_hash)
+      file_path           = build_file_path(row_hash)
+      normalized_row_hash = normalize_row_hash(row_hash)
 
       append_row_to_file(file_path, normalized_row_hash)
     end
@@ -55,6 +61,10 @@ module Hakoy
 
     def normalize_row_hash(row_hash)
       @row_normalizer.normalize(row_hash)
+    end
+
+    def normalize_timestamp(row_hash)
+      @timestamp_normalizer.(row_hash)
     end
 
     def append_row_to_file(file_path, row_hash)
