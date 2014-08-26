@@ -14,42 +14,45 @@ require_relative "hakoy/file_appender"
 
 module Hakoy
   def self.call(file, conf)
-    Proxy.new(conf).store(file)
+    Proxy.new(file, conf).store
   end
 
   class Proxy
     DEFAULT_OUTPUT_FORMAT = 'csv'
     DEFAULT_UID_KEY       = 'uid'
 
-    def initialize(conf)
-      @timestamp_key         = conf.fetch(:timestamp_key)
+    attr_reader :file, :required_keys, :timestamp_key
+
+    def initialize(file, conf)
+      @file                  = file
       @db_dir                = conf.fetch(:db_dir)
       @output_format         = conf.fetch(:output_format)   { DEFAULT_OUTPUT_FORMAT }
       @uid_key               = conf.fetch(:uid_key)         { DEFAULT_UID_KEY       }
       @file_iterator         = conf.fetch(:file_iterator)   { FileIterator          }
       @append_strategy       = conf.fetch(:append_strategy) { AppendStrategy.new    }
-      @required_keys_mapping = conf.fetch(:required_keys_mapping)
+      required_keys_mapping  = conf.fetch(:required_keys_mapping)
+      timestamp_key          = conf.fetch(:timestamp_key)
+      headers                = find_headers(file)
+      @required_keys         = find_required_keys(headers, required_keys_mapping)
+      @timestamp_key         = headers[timestamp_key]
+      @timestamp_path        = TimestampPath.new
+      @timestamp_normalizer  = TimestampNormalizer.new(key: @timestamp_key)
+      @row_normalizer        = RowNormalizer.new \
+                                 uid_key: @uid_key,
+                                 required_keys: @required_keys.values
     end
 
-    def store(file)
-      headers               = find_headers(file)
-      required_keys         = find_required_keys(headers, @required_keys_mapping)
-      timestamp_key         = headers[@timestamp_key]
-
-      @timestamp_path       = TimestampPath.new
-      @row_normalizer       = RowNormalizer.new(uid_key: @uid_key, required_keys: required_keys.values)
-      @timestamp_normalizer = TimestampNormalizer.new(key: timestamp_key)
-      @timestamp_key        = timestamp_key
-
+    def store
       @file_iterator.(file) do |row_hash|
         store_row(row_hash)
       end
 
-      finalize_store! required_keys
+      finalize_store!
     end
 
     private
 
+    # We are assuming we deal with CSV files only.
     def find_headers(file)
       csv_reader = CSV.new(File.open(file, 'r')).lazy
       csv_reader.take(1).force[0]
@@ -72,7 +75,7 @@ module Hakoy
     end
 
     def build_file_path(row_hash)
-      path_opts = @timestamp_path.to_path(row_hash[@timestamp_key])
+      path_opts = @timestamp_path.to_path(row_hash[timestamp_key])
       File.join \
         @db_dir, path_opts[:dir], "#{path_opts[:file]}.#{@output_format}"
     end
@@ -89,7 +92,7 @@ module Hakoy
       @append_strategy.append_row_to_file file_path, row_hash
     end
 
-    def finalize_store!(required_keys)
+    def finalize_store!
       @append_strategy.finalize! \
         uid_key:      DEFAULT_UID_KEY,
         keys_mapping: required_keys
