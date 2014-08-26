@@ -11,13 +11,14 @@ Parse and organize CSV data into timestamp-sliced directories.
 conf = {
   db_dir:        'your file dir to store results',
   output_format: 'csv', # default
-  timestamp_key: 'timestamp',
+  timestamp_key: 'timestamp column index',
   required_keys: [
-    'order_id',
-    'customer_id',
-    'product_id',
-    'price',
-    'timestamp'
+    customer:  24,
+    product:   17,
+    timestamp: 15,
+    price:     18,
+    quantity:  16,
+    order_id:  0
   ]
 }
 
