@@ -7,16 +7,16 @@ describe Hakoy do
 
   it 'stores csv rows in timestamp sliced directories' do
     conf = {
-      timestamp_key: 'Created at',
+      timestamp_key: 15,
       db_dir: tmp_path,
       output_format: 'csv',
       required_keys_mapping: {
-        customer:  'Billing Name',
-        product:   'Lineitem name',
-        timestamp: 'Created at',
-        price:     'Lineitem price',
-        quantity:  'Lineitem quantity',
-        order_id:  'Name'
+        customer:  24,
+        product:   17,
+        timestamp: 15,
+        price:     18,
+        quantity:  16,
+        order_id:  0
       }
     }
     Hakoy.(fixture_file('orders.csv'), conf)

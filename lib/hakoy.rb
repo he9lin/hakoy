@@ -29,21 +29,39 @@ module Hakoy
       @file_iterator         = conf.fetch(:file_iterator)   { FileIterator          }
       @append_strategy       = conf.fetch(:append_strategy) { AppendStrategy.new    }
       @required_keys_mapping = conf.fetch(:required_keys_mapping)
-      @timestamp_path        = TimestampPath.new
-      @row_normalizer        = RowNormalizer.new(
-        required_keys: @required_keys_mapping.values, uid_key: @uid_key
-      )
-      @timestamp_normalizer  = TimestampNormalizer.new(
-        key: @timestamp_key
-      )
     end
 
     def store(file)
-      @file_iterator.(file) { |row_hash| store_row(row_hash) }
-      finalize_store!
+      headers               = find_headers(file)
+      required_keys         = find_required_keys(headers, @required_keys_mapping)
+      timestamp_key         = headers[@timestamp_key]
+
+      @timestamp_path       = TimestampPath.new
+      @row_normalizer       = RowNormalizer.new(uid_key: @uid_key, required_keys: required_keys.values)
+      @timestamp_normalizer = TimestampNormalizer.new(key: timestamp_key)
+      @timestamp_key        = timestamp_key
+
+      @file_iterator.(file) do |row_hash|
+        store_row(row_hash)
+      end
+
+      finalize_store! required_keys
     end
 
     private
+
+    def find_headers(file)
+      csv_reader = CSV.new(File.open(file, 'r')).lazy
+      csv_reader.take(1).force[0]
+    end
+
+    def find_required_keys(headers, required_keys_mapping)
+      {}.tap do |hash|
+        required_keys_mapping.each do |k, v|
+          hash[k] = headers[v]
+        end
+      end
+    end
 
     def store_row(row_hash)
       row_hash            = normalize_timestamp(row_hash)
@@ -71,10 +89,10 @@ module Hakoy
       @append_strategy.append_row_to_file file_path, row_hash
     end
 
-    def finalize_store!
+    def finalize_store!(required_keys)
       @append_strategy.finalize! \
         uid_key:      DEFAULT_UID_KEY,
-        keys_mapping: @required_keys_mapping
+        keys_mapping: required_keys
     end
   end
 end
