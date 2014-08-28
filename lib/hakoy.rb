@@ -13,8 +13,22 @@ require_relative "hakoy/row_normalizer"
 require_relative "hakoy/file_appender"
 
 module Hakoy
-  def self.call(file, conf)
-    Proxy.new(file, conf).store
+  class << self
+    def call(file, conf)
+      Proxy.new(file, conf).store
+    end
+
+    def configure(&block)
+      instance_eval(&block)
+    end
+
+    def root_dir(dir=nil)
+      if dir
+        @root_dir = dir
+      else
+        @root_dir
+      end
+    end
   end
 
   class Proxy
@@ -24,8 +38,10 @@ module Hakoy
     attr_reader :file, :required_keys, :timestamp_key
 
     def initialize(file, conf)
+      raise 'Missing Hakoy.root_dir config' unless Hakoy.root_dir
+
       @file                  = file
-      @db_dir                = conf.fetch(:db_dir)
+      @db_dir                = File.join(Hakoy.root_dir, conf.fetch(:db_id))
       @output_format         = conf.fetch(:output_format)   { DEFAULT_OUTPUT_FORMAT }
       @uid_key               = conf.fetch(:uid_key)         { DEFAULT_UID_KEY       }
       @file_iterator         = conf.fetch(:file_iterator)   { FileIterator          }

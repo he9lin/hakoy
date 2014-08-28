@@ -8,16 +8,18 @@ Parse and organize CSV data into timestamp-sliced directories.
 ## Usage
 
 ```ruby
+Hakoy.configure do
+  root_dir: '/app/data'
+end
+
 conf = {
-  db_dir:        'your file dir to store results',
-  output_format: 'csv', # default
-  timestamp_key: 'timestamp column index',
+  stats_db_id:   'your file dir to store results',
+  timestamp_key: 15,
   required_keys: [
     customer:  24,
     product:   17,
     timestamp: 15,
     price:     18,
-    quantity:  16,
     order_id:  0
   ]
 }

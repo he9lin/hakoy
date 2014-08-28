@@ -4,6 +4,10 @@ require 'hakoy'
 require 'pathname'
 require 'json'
 
+Hakoy.configure do
+  root_dir File.join(File.dirname(__FILE__), 'tmp')
+end
+
 RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true
   config.filter_run focus: true
