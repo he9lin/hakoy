@@ -13,7 +13,7 @@ Hakoy.configure do
 end
 
 conf = {
-  stats_db_id:   'your file dir to store results',
+  db_id:   'your file dir to store results',
   timestamp_key: 15,
   required_keys: [
     customer:  24,
